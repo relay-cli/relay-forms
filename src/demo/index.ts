@@ -1,1 +1,1 @@
-export {DemoForm} from './DemoForm.js';
+export {DemoForm, demoFields, type DemoFormProps} from './DemoForm.js';

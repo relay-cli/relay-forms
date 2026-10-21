@@ -3,9 +3,10 @@
 import {renderToString} from 'ink';
 import {helpText, parseCliOptions} from './cli/options.js';
 import {DemoForm} from './demo/index.js';
+import {FormCancelledError, runForm} from './run.js';
 import {relayFormsVersion} from './version.js';
 
-const main = (): void => {
+const main = async (): Promise<void> => {
   let options;
   try {
     options = parseCliOptions(process.argv.slice(2));
@@ -23,8 +24,22 @@ const main = (): void => {
     process.exitCode = 2;
     return;
   }
-  const columns = process.stdout.columns || 80;
-  process.stdout.write(`${renderToString(<DemoForm />, {columns})}\n`);
+  if (options.snapshot || !process.stdout.isTTY || !process.stdin.isTTY) {
+    const columns = process.stdout.columns || 80;
+    process.stdout.write(`${renderToString(<DemoForm interactive={false} />, {columns})}\n`);
+    return;
+  }
+
+  try {
+    const answers = await runForm<Record<string, unknown>>(({submit, cancel}) => (
+      <DemoForm onSubmit={submit} onCancel={cancel} />
+    ));
+    process.stdout.write(`\n${JSON.stringify(answers, undefined, 2)}\n`);
+  } catch (error) {
+    if (!(error instanceof FormCancelledError)) throw error;
+    process.stderr.write('Cancelled.\n');
+    process.exitCode = 130;
+  }
 };
 
-main();
+await main();
