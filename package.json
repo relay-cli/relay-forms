@@ -1,0 +1,78 @@
+{
+  "name": "@relay-cli/forms",
+  "version": "0.1.0",
+  "description": "Terminal prompts, multi-step wizards, and config editors for command-line setup flows.",
+  "license": "MIT",
+  "type": "module",
+  "private": false,
+  "keywords": [
+    "cli",
+    "config",
+    "forms",
+    "ink",
+    "prompts",
+    "react",
+    "terminal-ui",
+    "wizard"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/relay-cli/relay-forms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/relay-cli/relay-forms/issues"
+  },
+  "homepage": "https://github.com/relay-cli/relay-forms#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "overrides": {
+    "esbuild": "0.28.2"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "relay-forms": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/cli.tsx",
+    "demo": "tsx src/cli.tsx --demo",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "ink": "^7.1.1",
+    "react": "^19.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "eslint": "^10.11.0",
+    "ink-testing-library": "^4.0.0",
+    "prettier": "^3.9.9",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.2"
+  }
+}

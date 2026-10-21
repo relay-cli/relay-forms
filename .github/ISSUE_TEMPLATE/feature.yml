@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest a focused improvement to prompts, wizards, or configuration editors.
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Describe the setup flow that is currently difficult to build.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true

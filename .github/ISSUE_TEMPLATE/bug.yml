@@ -1,0 +1,23 @@
+name: Bug report
+description: Report reproducible Relay Forms behavior.
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include the smallest form or wizard definition and the key sequence that reproduces the issue.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Relay Forms version, Node.js version, terminal, and operating system.
+    validations:
+      required: true
