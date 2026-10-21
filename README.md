@@ -9,30 +9,54 @@ npm install
 npm run demo
 ```
 
-To print the demonstration without waiting for input:
+The demonstration asks the questions of a project setup flow and prints the answers. To print its first screen without waiting for input:
 
 ```sh
 npx tsx src/cli.tsx --demo --snapshot
 ```
 
-## Use it in a tool
+## Ask questions
 
-`runForm` renders a form where the cursor is and resolves with the value the form submits. Esc and Ctrl+C cancel it, and `runForm` then rejects with `FormCancelledError`.
+`askAll` asks a list of fields in order and resolves with the answers, keyed by field name. Answered questions stay in the terminal as a summary.
 
-```tsx
-import {Text} from 'ink';
-import {FormCancelledError, FormFrame, runForm} from '@relay-cli/forms';
+```ts
+import {FormCancelledError, askAll, defineFields} from '@relay-cli/forms';
+
+const fields = defineFields([
+  {kind: 'text', name: 'name', label: 'Project name', required: true},
+  {
+    kind: 'select',
+    name: 'packageManager',
+    label: 'Package manager',
+    options: [{value: 'npm'}, {value: 'pnpm'}],
+  },
+  {kind: 'text', name: 'token', label: 'Registry token', mask: true},
+  {kind: 'confirm', name: 'git', label: 'Initialize a git repository?', initial: true},
+]);
 
 try {
-  const answer = await runForm<string>(({submit}) => (
-    <FormFrame title="Create project">
-      <MyField onSubmit={submit} />
-    </FormFrame>
-  ));
+  const answers = await askAll(fields);
+  // answers.packageManager is typed as 'npm' | 'pnpm'
 } catch (error) {
   if (error instanceof FormCancelledError) process.exitCode = 130;
   else throw error;
 }
+```
+
+`ask` asks a single field. Fields can be `text`, `number`, `confirm`, `select`, or `multiselect`, and each can validate its answer, including with an asynchronous check. See [the prompt guide](./docs/prompts.md).
+
+## Build your own form
+
+`runForm` renders any Ink component where the cursor is and resolves with the value the component submits. Ctrl+C cancels it, and `runForm` then rejects with `FormCancelledError`. `Prompt`, `PromptList`, and `FormFrame` are ordinary components, so they can be combined with your own.
+
+```tsx
+import {FormFrame, PromptList, runForm} from '@relay-cli/forms';
+
+const answers = await runForm<Record<string, unknown>>(({submit, cancel}) => (
+  <FormFrame title="Deploy">
+    <PromptList fields={fields} onSubmit={submit} onCancel={cancel} />
+  </FormFrame>
+));
 ```
 
 ## Development

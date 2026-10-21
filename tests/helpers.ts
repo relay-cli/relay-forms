@@ -27,7 +27,7 @@ export const noKey: Key = {
 export const keyOf = (key: Partial<Key> = {}): Key => ({...noKey, ...key});
 
 /** Give Ink a moment to read stdin and re-render. */
-export const tick = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 20));
+export const tick = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 50));
 
 class FakeStdout extends EventEmitter {
   readonly columns = 80;
