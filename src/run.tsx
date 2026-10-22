@@ -39,20 +39,24 @@ export const runForm = async <T,>(
   build: (controls: FormControls<T>) => ReactNode,
   options: RunFormOptions = {},
 ): Promise<T> => {
-  // A form may finish during its first render, before `render` has returned,
-  // so the outcome lives on an object the controls and the caller share.
+  // Unmount on the next turn of the event loop: a form may finish during its
+  // first render, before `render` has returned, and the update that shows the
+  // final answer should be drawn before the form closes.
   const state: {settled: boolean; result?: {value: T}; app?: Instance} = {settled: false};
+  const close = (): void => {
+    setTimeout(() => state.app?.unmount(), 0);
+  };
   const controls: FormControls<T> = {
     submit: (value) => {
       if (state.settled) return;
       state.settled = true;
       state.result = {value};
-      state.app?.unmount();
+      close();
     },
     cancel: () => {
       if (state.settled) return;
       state.settled = true;
-      state.app?.unmount();
+      close();
     },
   };
   const app = render(
@@ -65,7 +69,6 @@ export const runForm = async <T,>(
     },
   );
   state.app = app;
-  if (state.settled) app.unmount();
   const interrupt = (): void => controls.cancel();
   process.once('SIGTERM', interrupt);
   try {

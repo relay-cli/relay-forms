@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 import {Box, Text, useInput} from 'ink';
 import {relayTheme, type FormTheme} from '../theme.js';
 import {formatAnswer, validateAnswer} from './format.js';
@@ -76,16 +76,13 @@ export const Prompt = <F extends Field>({
     {isActive: isActive && phase.name !== 'done'},
   );
 
-  const submitted = useRef(false);
-  useEffect(() => {
-    if (phase.name !== 'done' || submitted.current) return;
-    submitted.current = true;
-    onSubmit(phase.value as FieldValue<F>);
-  }, [phase, onSubmit]);
-
+  // Submit in the same update that collapses the prompt, so a list can mount
+  // the next question before the next key arrives.
   const settle = (value: unknown, message: string | undefined): void => {
     setError(message);
-    setPhase(message === undefined ? {name: 'done', value} : {name: 'editing'});
+    if (message !== undefined) return setPhase({name: 'editing'});
+    setPhase({name: 'done', value});
+    onSubmit(value as FieldValue<F>);
   };
 
   const accept = (value: unknown): void => {
