@@ -1,4 +1,6 @@
-# Relay Forms
+<p align="center">
+  <img src="./docs/assets/banner.png" alt="Relay Forms" width="100%">
+</p>
 
 Relay Forms builds the setup flows of command-line tools: single prompts, multi-step wizards, and editors for configuration files. Forms render in the normal terminal rather than a full screen, so the answers stay in the scrollback after the flow finishes.
 
@@ -9,11 +11,14 @@ npm install
 npm run demo
 ```
 
-The demonstration asks the questions of a project setup flow and prints the answers. To print its first screen without waiting for input:
+The demo asks the questions of a project setup flow and prints the answers. It writes nothing to disk. Two more demonstrations show the other parts of the package:
 
 ```sh
-npx tsx src/cli.tsx --demo --snapshot
+npm run demo -- wizard
+npm run demo -- config
 ```
+
+`wizard` splits the same flow into steps with a review screen, and `config` opens a sample settings document in the configuration editor. Add `--snapshot` to print the first screen of any demonstration and exit.
 
 ## Ask questions
 
@@ -80,6 +85,21 @@ const {saved, changes} = await editConfig('./service.json', [
 
 Run `npm run demo -- config` to try it on a sample document. See [the configuration editor guide](./docs/config-editor.md).
 
+## Keys
+
+| Key      | Action                                                      |
+| -------- | ----------------------------------------------------------- |
+| `Enter`  | Accept the answer, or edit the selected setting             |
+| `Escape` | Return to the previous question, or cancel at the first one |
+| `↑`, `↓` | Move through options, or between settings                   |
+| `Space`  | Toggle an option in a multiple choice                       |
+| `y`, `n` | Answer a confirmation                                       |
+| `s`      | Save the configuration editor                               |
+| `q`      | Leave the configuration editor, confirming unsaved changes  |
+| `Ctrl+C` | Cancel the form                                             |
+
+Text fields also accept `Ctrl+A`, `Ctrl+E`, `Ctrl+U`, `Ctrl+K`, and `Ctrl+W`. The complete list for each field kind is in [the prompt guide](./docs/prompts.md).
+
 ## Build your own form
 
 `runForm` renders any Ink component where the cursor is and resolves with the value the component submits. Ctrl+C cancels it, and `runForm` then rejects with `FormCancelledError`. `Prompt`, `PromptList`, and `FormFrame` are ordinary components, so they can be combined with your own.
@@ -94,13 +114,25 @@ const answers = await runForm<Record<string, unknown>>(({submit, cancel}) => (
 ));
 ```
 
+## Documentation
+
+- [Prompts](./docs/prompts.md)
+- [Wizards](./docs/wizard.md)
+- [Configuration editor](./docs/config-editor.md)
+- [Architecture](./docs/architecture.md)
+
+## Scope
+
+This release covers questions asked while a tool is set up or reconfigured. Full-screen layouts belong in Relay Shell, and the configuration editor reads and writes JSON files.
+
 ## Development
 
 ```sh
+npm install
 npm run check
 ```
 
-Relay Forms requires Node.js 22 or newer. See [the architecture notes](./docs/architecture.md) and [CONTRIBUTING.md](./CONTRIBUTING.md).
+`npm run check` verifies formatting, linting, strict types, tests, and the distributable package. Relay Forms requires Node.js 22 or newer. See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
