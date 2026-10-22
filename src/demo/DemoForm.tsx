@@ -3,6 +3,7 @@ import {Text} from 'ink';
 import {FormFrame} from '../frame/index.js';
 import {defineFields, keyHints, PromptList, type Field} from '../prompts/index.js';
 import {relayTheme} from '../theme.js';
+import type {DemoProps} from './types.js';
 
 export const demoFields = defineFields([
   {
@@ -40,15 +41,8 @@ export const demoFields = defineFields([
   {kind: 'confirm', name: 'git', label: 'Initialize a git repository?', initial: true},
 ]);
 
-export interface DemoFormProps {
-  /** Read keys. A snapshot renders the first question without waiting. */
-  interactive?: boolean;
-  onSubmit?: (answers: Record<string, unknown>) => void;
-  onCancel?: () => void;
-}
-
 /** A project setup flow that shows each kind of prompt. */
-export const DemoForm = ({interactive = true, onSubmit, onCancel}: DemoFormProps) => {
+export const DemoForm = ({interactive = true, onSubmit, onCancel}: DemoProps) => {
   const [current, setCurrent] = useState<Field | undefined>(demoFields[0]);
   return (
     <FormFrame

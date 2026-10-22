@@ -1,1 +1,17 @@
-export {DemoForm, demoFields, type DemoFormProps} from './DemoForm.js';
+import type {ReactNode} from 'react';
+import type {DemoName} from '../cli/options.js';
+import {DemoConfig} from './DemoConfig.js';
+import {DemoForm} from './DemoForm.js';
+import {DemoWizard} from './DemoWizard.js';
+import type {DemoProps} from './types.js';
+
+export {DemoConfig, demoConfigFields, demoConfigValues} from './DemoConfig.js';
+export {DemoForm, demoFields} from './DemoForm.js';
+export {DemoWizard, demoSteps} from './DemoWizard.js';
+export type {DemoProps} from './types.js';
+
+export const demos: Record<DemoName, (props: DemoProps) => ReactNode> = {
+  prompts: DemoForm,
+  wizard: DemoWizard,
+  config: DemoConfig,
+};

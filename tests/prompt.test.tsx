@@ -1,7 +1,7 @@
 import React from 'react';
 import {render} from 'ink-testing-library';
 import {describe, expect, expectTypeOf, it, vi} from 'vitest';
-import {ask, askAll, defineFields, Prompt, type Field} from '../src/prompts/index.js';
+import {ask, askAll, defineFields, Prompt, PromptList, type Field} from '../src/prompts/index.js';
 import {FormCancelledError} from '../src/run.js';
 import {fakeTerminal, tick} from './helpers.js';
 
@@ -202,5 +202,21 @@ describe('askAll', () => {
     const answers = await pending;
     expect(answers).toEqual({name: 'demo', pm: 'pnpm', git: false});
     expectTypeOf(answers).toEqualTypeOf<{name: string; pm: 'npm' | 'pnpm'; git: boolean}>();
+  });
+});
+
+describe('PromptList', () => {
+  it('returns to the previous question on Esc, keeping its answer', async () => {
+    const fields: Field[] = [
+      {kind: 'text', name: 'first', label: 'First'},
+      {kind: 'text', name: 'second', label: 'Second'},
+    ];
+    const onSubmit = vi.fn();
+    const view = render(<PromptList fields={fields} onSubmit={onSubmit} />);
+    await tick();
+    await press(view.stdin, 'a', enter, escape);
+    expect(view.lastFrame()).toContain('? First a');
+    await press(view.stdin, 'b', enter, 'c', enter);
+    expect(onSubmit).toHaveBeenCalledWith({first: 'ab', second: 'c'});
   });
 });

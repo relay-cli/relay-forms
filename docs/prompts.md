@@ -12,7 +12,7 @@ A prompt is one question described by a field. `ask` asks one field, `askAll` as
 | `select`      | the value  | ↑↓ or `j`/`k`, Home/End, Enter                       | `options`, `initial`, `limit`                |
 | `multiselect` | the values | ↑↓, Space toggles, `a` toggles all, Enter            | `options`, `initial`, `min`, `max`, `limit`  |
 
-Every field has a `name`, a `label`, and an optional `hint` shown beneath the active question. Esc cancels, and `ask` and `askAll` then reject with `FormCancelledError`.
+Every field has a `name`, a `label`, and an optional `hint` shown beneath the active question. In `askAll` and `PromptList`, Esc returns to the previous question with its answer kept. At the first question Esc cancels, and `ask` and `askAll` then reject with `FormCancelledError`.
 
 Options of `select` and `multiselect` take a `value`, an optional `label` and `hint`, and `disabled`, which may be a string explaining why the option cannot be picked. Lists longer than `limit` (7 by default) scroll.
 
