@@ -64,6 +64,22 @@ const answers = await runWizard(
 
 Run `npm run demo -- wizard` to try it. See [the wizard guide](./docs/wizard.md).
 
+## Configuration editors
+
+`editConfig` opens a JSON configuration file as a list of settings, edits each one with the prompt for its field, and writes the file only when the person saves. Dotted names edit nested values, and keys without a field are preserved.
+
+```ts
+import {editConfig} from '@relay-cli/forms';
+
+const {saved, changes} = await editConfig('./service.json', [
+  {kind: 'text', name: 'name', label: 'Service name', required: true},
+  {kind: 'number', name: 'server.port', label: 'Port', initial: 3000, min: 1, max: 65535},
+  {kind: 'text', name: 'token', label: 'API token', mask: true},
+]);
+```
+
+Run `npm run demo -- config` to try it on a sample document. See [the configuration editor guide](./docs/config-editor.md).
+
 ## Build your own form
 
 `runForm` renders any Ink component where the cursor is and resolves with the value the component submits. Ctrl+C cancels it, and `runForm` then rejects with `FormCancelledError`. `Prompt`, `PromptList`, and `FormFrame` are ordinary components, so they can be combined with your own.

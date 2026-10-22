@@ -19,6 +19,12 @@ describe('relay-forms command', () => {
     expect(stdout).toContain('Project name');
   }, 30_000);
 
+  it('prints the configuration editor demonstration', async () => {
+    const {stdout} = await run(process.execPath, [tsx, cli, '--demo', 'config', '--snapshot']);
+    expect(stdout).toContain('Port');
+    expect(stdout).toContain('(invalid)');
+  }, 30_000);
+
   it('explains how to start when no mode is chosen', async () => {
     await expect(run(process.execPath, [tsx, cli])).rejects.toMatchObject({code: 2});
   }, 30_000);

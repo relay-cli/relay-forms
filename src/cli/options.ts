@@ -1,4 +1,4 @@
-export const demoNames = ['prompts', 'wizard'] as const;
+export const demoNames = ['prompts', 'wizard', 'config'] as const;
 export type DemoName = (typeof demoNames)[number];
 
 export interface CliOptions {
@@ -12,7 +12,7 @@ export interface CliOptions {
 export const helpText = `Relay Forms
 
 Usage:
-  relay-forms --demo [prompts|wizard]
+  relay-forms --demo [prompts|wizard|config]
   relay-forms --demo wizard --snapshot
 
 Options:
@@ -24,6 +24,7 @@ Options:
 Demonstrations:
   prompts            A project setup flow that uses every kind of question
   wizard             The same flow split into steps, with a review screen
+  config             A settings editor over a sample configuration file
 
 Relay Forms is a library. Import it from @relay-cli/forms to build your own setup flow.
 `;

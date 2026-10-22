@@ -1,4 +1,5 @@
 export * from './frame/index.js';
+export * from './config/index.js';
 export * from './prompts/index.js';
 export {FormCancelledError, runForm, type FormControls, type RunFormOptions} from './run.js';
 export {formThemes, monoTheme, relayTheme, type FormTheme} from './theme.js';
