@@ -17,7 +17,7 @@ npx tsx src/cli.tsx --demo --snapshot
 
 ## Ask questions
 
-`askAll` asks a list of fields in order and resolves with the answers, keyed by field name. Answered questions stay in the terminal as a summary.
+`askAll` asks a list of fields in order and resolves with the answers, keyed by field name. Answered questions stay in the terminal as a summary, and Esc returns to the previous question.
 
 ```ts
 import {FormCancelledError, askAll, defineFields} from '@relay-cli/forms';
@@ -44,6 +44,25 @@ try {
 ```
 
 `ask` asks a single field. Fields can be `text`, `number`, `confirm`, `select`, or `multiselect`, and each can validate its answer, including with an asynchronous check. See [the prompt guide](./docs/prompts.md).
+
+## Multi-step wizards
+
+`runWizard` groups fields into steps. Steps can depend on earlier answers, Esc moves back through questions and steps, and a review screen lets the person change any step before the wizard resolves.
+
+```ts
+import {runWizard} from '@relay-cli/forms';
+
+const answers = await runWizard(
+  [
+    {id: 'project', title: 'Project', fields: [nameField, kindField]},
+    {id: 'service', title: 'Service', when: (a) => a.kind === 'service', fields: [portField]},
+    {id: 'publish', title: 'Publish', fields: [tokenField, gitField]},
+  ],
+  {title: 'Create a project'},
+);
+```
+
+Run `npm run demo -- wizard` to try it. See [the wizard guide](./docs/wizard.md).
 
 ## Build your own form
 
