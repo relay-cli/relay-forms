@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Box} from 'ink';
 import {runForm, type RunFormOptions} from '../run.js';
 import {relayTheme, type FormTheme} from '../theme.js';
@@ -34,44 +34,71 @@ export interface PromptListProps {
   fields: readonly Field[];
   /** Answers to start each field from, keyed by field name. */
   initialValues?: Readonly<Record<string, unknown>>;
+  /**
+   * Start at the last field, showing the earlier ones as answered from
+   * `initialValues`, such as when returning to a step of a wizard.
+   */
+  resume?: boolean;
   onSubmit: (answers: Record<string, unknown>) => void;
   /** Called after each answer with the field asked next, if any. */
   onAnswer?: (field: Field, value: unknown, next: Field | undefined) => void;
+  /** Called on Esc at the first field. Esc at a later field returns to the one before. */
   onCancel?: () => void;
   isActive?: boolean;
   theme?: FormTheme;
 }
 
+const startIndex = (
+  fields: readonly Field[],
+  values: Readonly<Record<string, unknown>>,
+  resume: boolean,
+): number => {
+  if (!resume) return 0;
+  const missing = fields.findIndex((field) => !(field.name in values));
+  return missing === -1 ? Math.max(0, fields.length - 1) : missing;
+};
+
 /** Fields asked one after another, with earlier answers kept above the current one. */
 export const PromptList = ({
   fields,
   initialValues = {},
+  resume = false,
   onSubmit,
   onAnswer,
   onCancel,
   isActive = true,
   theme = relayTheme,
 }: PromptListProps) => {
-  const [answers, setAnswers] = useState<Record<string, unknown>>({});
-  const index = Object.keys(answers).length;
+  const [values, setValues] = useState<Record<string, unknown>>(() => ({...initialValues}));
+  const [index, setIndex] = useState(() => startIndex(fields, initialValues, resume));
   const current = fields[index];
+
+  const submitted = useRef(false);
+  useEffect(() => {
+    if (fields.length > 0 || submitted.current) return;
+    submitted.current = true;
+    onSubmit({});
+  }, [fields, onSubmit]);
+
   return (
     <Box flexDirection="column">
       {fields.slice(0, index).map((field) => (
-        <AnsweredLine key={field.name} field={field} value={answers[field.name]} theme={theme} />
+        <AnsweredLine key={field.name} field={field} value={values[field.name]} theme={theme} />
       ))}
       {current === undefined ? null : (
         <Prompt
           key={current.name}
           field={current}
-          initialValue={initialValues[current.name] as never}
+          initialValue={values[current.name] as never}
           onSubmit={(value) => {
-            const next = {...answers, [current.name]: value};
-            setAnswers(next);
+            const next = {...values, [current.name]: value};
+            setValues(next);
             onAnswer?.(current, value, fields[index + 1]);
-            if (index + 1 === fields.length) onSubmit(next);
+            if (index + 1 < fields.length) return setIndex(index + 1);
+            setIndex(fields.length);
+            onSubmit(Object.fromEntries(fields.map((field) => [field.name, next[field.name]])));
           }}
-          {...(onCancel === undefined ? {} : {onCancel})}
+          onCancel={() => (index > 0 ? setIndex(index - 1) : onCancel?.())}
           isActive={isActive}
           theme={theme}
         />
